@@ -1,7 +1,10 @@
 import React, { useState } from "react";
+import MovieCard from "./MovieCard";
 
 export default function SearchMovie() {
-  const query = "Jurassic Park";
+  const [query, setQuery] = useState("");
+  const [movies, setMovies] = useState([]);
+
   const url = `https://api.themoviedb.org/3/search/movie?api_key=b09f5ecdeb396875af29df81f091a15a&language=en-US&query=${query}&page=1&include_adult=false`;
 
   const seacrhMovies = async (e) => {
@@ -11,7 +14,7 @@ export default function SearchMovie() {
       const res = await fetch(url);
       const data = await res.json();
 
-      console.log(data);
+      setMovies(data.results);
     } catch (err) {
       console.error(err.message);
     }
@@ -28,11 +31,20 @@ export default function SearchMovie() {
           type="text"
           name="query"
           placeholder="Type a movie"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
         ></input>
         <button className="button" type="submit">
           Search
         </button>
       </form>
+      <div className="card-list">
+        {movies
+          .filter((movie) => movie.poster_path)
+          .map((movie) => (
+            <MovieCard key={movie.id} movie={movie} />
+          ))}
+      </div>
     </div>
   );
 }
